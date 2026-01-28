@@ -1,0 +1,540 @@
+{
+  "datasets": [
+    {
+      "name": "f50c03d2",
+      "displayName": "usda_corn_gold_state_analysis",
+      "queryLines": [
+        "SELECT * FROM priceriskanalysis.gold.usda_corn_gold_state_analysispriceriskanalysis.gold.usda_corn_gold"
+      ]
+    },
+    {
+      "name": "a0f5e67a",
+      "displayName": "usda_corn_gold",
+      "queryLines": [
+        "select year, avg_price_received from priceriskanalysis.gold.usda_corn_gold\r\n",
+        "order by year;"
+      ],
+      "catalog": "priceriskanalysis",
+      "schema": "gold"
+    },
+    {
+      "name": "85f98908",
+      "displayName": "Leading Corn Producers Latest Year Analysis",
+      "queryLines": [
+        "with top_states as (\n",
+        "  select state_name , year , total_production , avg_price_received,\n",
+        "  rank() over(partition by year order by total_production desc) as rnk\n",
+        "  from priceriskanalysis.gold.usda_corn_gold_state_analysis\n",
+        "  where year = (\n",
+        "    select max(year) from priceriskanalysis.gold.usda_corn_gold_state_analysis\n",
+        "  )\n",
+        ")\n",
+        "select state_name, total_production from top_states\n",
+        "where rnk <=5\n",
+        "order by total_production desc;"
+      ]
+    },
+    {
+      "name": "0dd38ad1",
+      "displayName": "Corn Yearly Price Change Trends",
+      "queryLines": [
+        "with price_cte as(\n",
+        "  select year,avg_price_received,\n",
+        "  lag(avg_price_received) over(order by year) as prev_year_price \n",
+        "  from priceriskanalysis.gold.usda_corn_gold\n",
+        ")\n",
+        "select year, \n",
+        "case \n",
+        "   when prev_year_price is null then null \n",
+        "else round(avg_price_received - prev_year_price,2) end as price_change\n",
+        "from price_cte\n",
+        "order by year;"
+      ]
+    },
+    {
+      "name": "381374d7",
+      "displayName": "Top Corn State Price Variability Rankings",
+      "queryLines": [
+        "select state_name , price_std from priceriskanalysis.gold.usda_corn_state_risk\n",
+        "order by price_std desc\n",
+        "limit 5;\n"
+      ]
+    },
+    {
+      "name": "534814b5",
+      "displayName": "Top Corn Producing States Analysis 2023",
+      "queryLines": [
+        "with top_states as (\n",
+        "  select state_name , year , total_production , avg_price_received,\n",
+        "  rank() over(partition by year order by total_production desc) as rnk\n",
+        "  from priceriskanalysis.gold.usda_corn_gold_state_analysis\n",
+        "  where year = (\n",
+        "    select max(year) from priceriskanalysis.gold.usda_corn_gold_state_analysis\n",
+        "  )\n",
+        ")\n",
+        "select state_name, total_production,avg_price_received from top_states\n",
+        "where rnk <=5\n",
+        "order by total_production desc;"
+      ]
+    },
+    {
+      "name": "6d6eca97",
+      "displayName": "Untitled dataset",
+      "queryLines": [
+        "select max(year) as year,sum(total_production)*56 as total_production_pounds\n",
+        "from priceriskanalysis.gold.usda_corn_gold_state_analysis"
+      ]
+    },
+    {
+      "name": "49631fbf",
+      "displayName": "Untitled dataset",
+      "queryLines": [
+        "select max(year) as year,sum(total_production)*56 as total_production_pounds\n",
+        "from priceriskanalysis.gold.usda_corn_gold_state_analysis"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "0e2a12bf",
+      "displayName": "Untitled page",
+      "layout": [
+        {
+          "widget": {
+            "name": "e82ca9ec",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block\"><span style=\"font-family:Times New Roman;font-size:24px\">**US CORN PRICE MARKET INTELLIGENCE DASHBOARD**</span></span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "avg-price-received-per-bu",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "a0f5e67a",
+                  "fields": [
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "avg_price_received",
+                      "expression": "`avg_price_received`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "year",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg_price_received",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "                      Avg Price Received per BU "
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "year-over-year-price-change",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0dd38ad1",
+                  "fields": [
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "sum(price_change)",
+                      "expression": "SUM(`price_change`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "year",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(price_change)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "                  YEAR OVER YEAR PRICE CHANGE"
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "top-5-states-price-risk",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "381374d7",
+                  "fields": [
+                    {
+                      "name": "price_std",
+                      "expression": "`price_std`"
+                    },
+                    {
+                      "name": "state_name",
+                      "expression": "`state_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "price_std",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "state_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "TOP 5 STATES OF PRICE RISK"
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 3,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "516c60af",
+            "multilineTextboxSpec": {
+              "lines": [
+                "Yield is measured in bushels per acre (BU/ACRE), production in total bushels (BU), harvested area in acres, price received in dollars per bushel ($/BU), with one bushel equal to 56 pounds.”"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "top-5-states-high-avg-price",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "534814b5",
+                  "fields": [
+                    {
+                      "name": "avg_price_received",
+                      "expression": "`avg_price_received`"
+                    },
+                    {
+                      "name": "state_name",
+                      "expression": "`state_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "avg_price_received",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "state_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "             TOP 5 STATES WITH HIGH AVG PRICE"
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 5,
+            "width": 3,
+            "height": 4
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}

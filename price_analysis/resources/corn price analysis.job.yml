@@ -1,0 +1,107 @@
+resources:
+  jobs:
+    Price_risk_analysis:
+      name: Price risk analysis
+      tasks:
+        - task_key: usda_area_harvested
+          notebook_task:
+            notebook_path: /Workspace/State-Level-Supply-Volatility-Price-Risk-Analysis-using-USDA-FRED/State-Level-Supply-Volatility-Price-Risk-Analysis-using-USDA-FRED/price_analysis/src/notebooks/Bronze_ingestion
+            base_parameters:
+              catalog_name: priceriskanalysis
+              commodity: CORN
+              statistic: AREA HARVESTED
+            source: WORKSPACE
+        - task_key: silver_area_harvested
+          depends_on:
+            - task_key: usda_area_harvested
+          notebook_task:
+            notebook_path: /Workspace/State-Level-Supply-Volatility-Price-Risk-Analysis-using-USDA-FRED/State-Level-Supply-Volatility-Price-Risk-Analysis-using-USDA-FRED/price_analysis/src/notebooks/Silver
+              layer
+            base_parameters:
+              catalog_name: priceriskanalysis
+              commodity: CORN
+              statistic: AREA HARVESTED
+            source: WORKSPACE
+        - task_key: usda_price_received
+          notebook_task:
+            notebook_path: /Workspace/State-Level-Supply-Volatility-Price-Risk-Analysis-using-USDA-FRED/State-Level-Supply-Volatility-Price-Risk-Analysis-using-USDA-FRED/price_analysis/src/notebooks/Bronze_ingestion
+            base_parameters:
+              catalog_name: priceriskanalysis
+              commodity: CORN
+              statistic: PRICE RECEIVED
+            source: WORKSPACE
+        - task_key: silver_price_recived
+          depends_on:
+            - task_key: usda_price_received
+          notebook_task:
+            notebook_path: /Workspace/State-Level-Supply-Volatility-Price-Risk-Analysis-using-USDA-FRED/State-Level-Supply-Volatility-Price-Risk-Analysis-using-USDA-FRED/price_analysis/src/notebooks/Silver
+              layer
+            base_parameters:
+              catalog_name: priceriskanalysis
+              commodity: CORN
+              statistic: PRICE RECEIVED
+            source: WORKSPACE
+        - task_key: usda_production
+          notebook_task:
+            notebook_path: /Workspace/State-Level-Supply-Volatility-Price-Risk-Analysis-using-USDA-FRED/State-Level-Supply-Volatility-Price-Risk-Analysis-using-USDA-FRED/price_analysis/src/notebooks/Bronze_ingestion
+            base_parameters:
+              catalog_name: priceriskanalysis
+              commodity: CORN
+              statistic: PRODUCTION
+            source: WORKSPACE
+        - task_key: silver_production
+          depends_on:
+            - task_key: usda_production
+          notebook_task:
+            notebook_path: /Workspace/State-Level-Supply-Volatility-Price-Risk-Analysis-using-USDA-FRED/State-Level-Supply-Volatility-Price-Risk-Analysis-using-USDA-FRED/price_analysis/src/notebooks/Silver
+              layer
+            base_parameters:
+              catalog_name: priceriskanalysis
+              commodity: CORN
+              statistic: PRODUCTION
+            source: WORKSPACE
+        - task_key: usda_yield
+          notebook_task:
+            notebook_path: /Workspace/State-Level-Supply-Volatility-Price-Risk-Analysis-using-USDA-FRED/State-Level-Supply-Volatility-Price-Risk-Analysis-using-USDA-FRED/price_analysis/src/notebooks/Bronze_ingestion
+            base_parameters:
+              catalog_name: priceriskanalysis
+              commodity: CORN
+              statistic: YIELD
+            source: WORKSPACE
+        - task_key: silver_yield
+          depends_on:
+            - task_key: usda_yield
+          notebook_task:
+            notebook_path: /Workspace/State-Level-Supply-Volatility-Price-Risk-Analysis-using-USDA-FRED/State-Level-Supply-Volatility-Price-Risk-Analysis-using-USDA-FRED/price_analysis/src/notebooks/Silver
+              layer
+            base_parameters:
+              catalog_name: priceriskanalysis
+              commodity: CORN
+              statistic: YIELD
+            source: WORKSPACE
+        - task_key: gold
+          depends_on:
+            - task_key: silver_yield
+            - task_key: silver_production
+            - task_key: silver_price_recived
+            - task_key: silver_area_harvested
+          notebook_task:
+            notebook_path: /Workspace/State-Level-Supply-Volatility-Price-Risk-Analysis-using-USDA-FRED/State-Level-Supply-Volatility-Price-Risk-Analysis-using-USDA-FRED/price_analysis/src/notebooks/gold
+            source: WORKSPACE
+        - task_key: PRICE_ANALYSIS_DASHBOARD
+          depends_on:
+            - task_key: gold
+          dashboard_task:
+            subscription: {}
+            warehouse_id: b7d194518127b5e3
+            dashboard_id: 01f0fbd2c69115aaa364518c11d6d4b2
+        - task_key: corn_production_insights_dashboard
+          depends_on:
+            - task_key: gold
+          dashboard_task:
+            subscription: {}
+            warehouse_id: b7d194518127b5e3
+            dashboard_id: 01f0fbf4041715b29f1c925379668db3
+      queue:
+        enabled: true
+      performance_target: PERFORMANCE_OPTIMIZED
